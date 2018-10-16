@@ -2,6 +2,8 @@ from mnist import MNIST
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import seaborn as sns
+import pandas as pa
 classes = 10
 
 def load_data():
@@ -63,6 +65,12 @@ def feature_transform(xs,p):
         xr.append(x)
         #print(g.shape)
     return xr
+def plotter(data):
+    a = sns.relplot(kind = "line",data=pa.DataFrame(data))
+    a.set_xlabels('Feature Vector Length P')
+    a.set_ylabels('Accuracy of the Model')
+    a.savefig('Final_Question.png')
+    plt.show()
 
 def model_validation(train_data, train_label, valid_data, valid_label):
     result1,result2 = [], []
@@ -71,7 +79,7 @@ def model_validation(train_data, train_label, valid_data, valid_label):
     valid_old = 10000
     train_old = 10000
     index = 0
-    for p in tqdm(range(7000)):
+    for p in tqdm(range(10)):
         #print(train_data.shape)
         data = feature_transform([train_data.T,valid_data.T],p+2)
         #print ('#',train_data_t.shape)
@@ -86,13 +94,29 @@ def model_validation(train_data, train_label, valid_data, valid_label):
         index  = p
         if abs(acc_valid-valid_old)<0.1:
             break
+
     result1 = np.array(result1)
     result2 = np.array(result2)
+    plotter({"Training Accuracy":result1,"Validation Accuracy":result2})
     #print ("##########################",result.shape)
-    plt.plot(result1)
-    plt.plot(result2)
-    plt.show()
-    np.save('result.npy',result)
+    # plt.plot(result1)
+    # plt.plot(result2)
+    # plt.show()
+    np.save('result1.npy',result1)
+    np.save('result1.npy',result2)
+    return index
+
+def model_test(X_train, X_test, labels_test, labels_train,p):
+    delta = .05
+    labels = onehot([labels_train,labels_test],classes)
+    data = feature_transform([X_train.T,X_test.T],p)
+    w = train(labels[0],data[0],10^-4)
+    test_predict = predict(data[1],w)
+    E_test = (metric(test_predict,labels_test)/100)
+    epsilon = np.sqrt((np.log(2/delta))/(2*labels_test.shape[0]))
+    lower_c = E_test - epsilon
+    upper_c = E_test + epsilon
+    print("The confidence limits are from "+str(lower_c)+" to "+str(upper_c)+" around the test accuracy of "+str(E_test))
 
 
 X_train, X_test, labels_test, labels_train = load_data()
@@ -106,4 +130,5 @@ print("Testing Data metric: ",metric(result,labels_test))
 train_data, train_label, valid_data, valid_label = random_split(X_train,labels_train,.8)
 # print("2:",train_data)
 # print("3:",valid_data)
-model_validation(train_data, train_label, valid_data, valid_label)
+index = model_validation(train_data, train_label, valid_data, valid_label)
+model_test(X_train, X_test, labels_test, labels_train,500)
