@@ -26,7 +26,8 @@ def onehot(labels, clas):
 def train(Y,X,l):
     #print('y --',Y.shape)
     #print('x--',X.shape)
-    w = Y@X.T@np.linalg.inv(X@X.T-l*np.identity(X.shape[0]))
+    #w = Y@X.T@np.linalg.inv(X@X.T-l*np.identity(X.shape[0]))
+    w = np.linalg.solve(X@X.T-l*np.identity(X.shape[0]),X@Y.T)
     #print("w--",w.shape)
     return w
 
