@@ -79,9 +79,9 @@ def model_validation(train_data, train_label, valid_data, valid_label):
     valid_old = 10000
     train_old = 10000
     index = 0
-    for p in tqdm(range(10)):
+    for p in tqdm(range(7000)):
         #print(train_data.shape)
-        data = feature_transform([train_data.T,valid_data.T],p+2)
+        data = feature_transform([train_data.T,valid_data.T],p+1)
         #print ('#',train_data_t.shape)
         #valid_data_t = feature_transform(valid_data.T,p+2)
         W = train(labels[0],data[0],10^-4)
@@ -94,6 +94,7 @@ def model_validation(train_data, train_label, valid_data, valid_label):
         index  = p
         if abs(acc_valid-valid_old)<0.1:
             break
+        valid_old = acc_valid
 
     result1 = np.array(result1)
     result2 = np.array(result2)
@@ -117,6 +118,9 @@ def model_test(X_train, X_test, labels_test, labels_train,p):
     lower_c = E_test - epsilon
     upper_c = E_test + epsilon
     print("The confidence limits are from "+str(lower_c)+" to "+str(upper_c)+" around the test accuracy of "+str(E_test))
+    file = open("Log.Txt",'w')
+    file.write("The confidence limits are from "+str(lower_c)+" to "+str(upper_c)+" around the test accuracy of "+str(E_test))
+    file.close
 
 
 X_train, X_test, labels_test, labels_train = load_data()
@@ -131,4 +135,5 @@ train_data, train_label, valid_data, valid_label = random_split(X_train,labels_t
 # print("2:",train_data)
 # print("3:",valid_data)
 index = model_validation(train_data, train_label, valid_data, valid_label)
-model_test(X_train, X_test, labels_test, labels_train,500)
+print("Index: ", index)
+model_test(X_train, X_test, labels_test, labels_train,index)
