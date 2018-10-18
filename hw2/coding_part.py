@@ -27,7 +27,7 @@ def train(Y,X,l):
     #print('y --',Y.shape)
     #print('x--',X.shape)
     #w = Y@X.T@np.linalg.inv(X@X.T-l*np.identity(X.shape[0]))
-    w = np.linalg.solve(X@X.T-l*np.identity(X.shape[0]),X@Y.T)
+    w = np.linalg.solve(X@X.T+l*np.identity(X.shape[0]),X@Y.T)
     #print("w--",w.shape)
     return w
 
@@ -58,7 +58,7 @@ def random_split(x,y,split):
 
 def feature_transform(xs,p):
     xr = []
-    g = .1*np.random.randn(p,xs[0].shape[0])
+    g = np.sqrt(.1)*np.random.randn(p,xs[0].shape[0])
     b = np.random.uniform(0,2*np.pi,(p,1))
     for x in xs:
         x = (g@x)+b
