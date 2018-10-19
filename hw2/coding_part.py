@@ -72,7 +72,7 @@ def plotter(data):
     a.set_xlabels('Feature Vector Length P')
     a.set_ylabels('Accuracy of the Model')
     a.savefig('Final_Question.png')
-    plt.show()
+    #plt.show()
 
 def model_validation(train_data, train_label, valid_data, valid_label):
     result1,result2 = [], []
@@ -81,7 +81,7 @@ def model_validation(train_data, train_label, valid_data, valid_label):
     valid_old = 10000
     train_old = 10000
     index = 0
-    for p in tqdm(range(1500)):
+    for p in tqdm(range(1500,6000)):
         #print(train_data.shape)
         data = feature_transform([train_data,valid_data],p+1)
         #print ('#',train_data_t.shape)
