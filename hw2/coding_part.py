@@ -27,16 +27,16 @@ def train(Y,X,l):
     #print('y --',Y.shape)
     #print('x--',X.shape)
     #w = Y@X.T@np.linalg.inv(X@X.T-l*np.identity(X.shape[0]))
-    w = np.linalg.solve(X@X.T+l*np.identity(X.shape[0]),X@Y.T)
+    w = np.linalg.solve(X.T@X-l*np.identity(X.shape[1]),X.T@Y.T)
     #print("w--",w.shape)
     return w
 
 def predict(X,W):
-    p = W@X
+    p = X@W
     #print("^^^^",p.shape)
-    result = np.zeros((X.shape[1],1))
-    for i in range(X.shape[1]):
-        result[i] = np.argmax(p[:,i])
+    result = np.zeros((X.shape[0],1))
+    for i in range(X.shape[0]):
+        result[i] = np.argmax(p[i,:])
     #print (result.shape)
     return result
 
@@ -58,10 +58,11 @@ def random_split(x,y,split):
 
 def feature_transform(xs,p):
     xr = []
-    g = np.sqrt(.1)*np.random.randn(p,xs[0].shape[0])
-    b = np.random.uniform(0,2*np.pi,(p,1))
+    #print (xs[0].shape)
+    g = np.sqrt(.1)*np.random.randn(xs[0].shape[1],p)
+    b = np.random.uniform(0,2*np.pi,(1,p))
     for x in xs:
-        x = (g@x)+b
+        x = (x@g)+b
         x = np.cos(x)
         xr.append(x)
         #print(g.shape)
@@ -80,9 +81,9 @@ def model_validation(train_data, train_label, valid_data, valid_label):
     valid_old = 10000
     train_old = 10000
     index = 0
-    for p in tqdm(range(7000)):
+    for p in tqdm(range(1500)):
         #print(train_data.shape)
-        data = feature_transform([train_data.T,valid_data.T],p+1)
+        data = feature_transform([train_data,valid_data],p+1)
         #print ('#',train_data_t.shape)
         #valid_data_t = feature_transform(valid_data.T,p+2)
         W = train(labels[0],data[0],10^-4)
@@ -95,7 +96,7 @@ def model_validation(train_data, train_label, valid_data, valid_label):
         index  = p
         if abs(acc_valid-valid_old)<0.1:
             break
-        valid_old = acc_valid
+        # valid_old = acc_valid
 
     result1 = np.array(result1)
     result2 = np.array(result2)
@@ -111,7 +112,7 @@ def model_validation(train_data, train_label, valid_data, valid_label):
 def model_test(X_train, X_test, labels_test, labels_train,p):
     delta = .05
     labels = onehot([labels_train,labels_test],classes)
-    data = feature_transform([X_train.T,X_test.T],p)
+    data = feature_transform([X_train,X_test],p)
     w = train(labels[0],data[0],10^-4)
     test_predict = predict(data[1],w)
     E_test = (metric(test_predict,labels_test)/100)
@@ -127,10 +128,10 @@ def model_test(X_train, X_test, labels_test, labels_train,p):
 X_train, X_test, labels_test, labels_train = load_data()
 #print (X_train.shape)-
 labels = onehot([labels_train,labels_test],classes)
-w = train(labels[0],X_train.T,10^-4)
-result = predict(X_train.T,w)
+w = train(labels[0],X_train,10^-4)
+result = predict(X_train,w)
 print("Training Data metric: ",metric(result,labels_train))
-result = predict(X_test.T,w)
+result = predict(X_test,w)
 print("Testing Data metric: ",metric(result,labels_test))
 train_data, train_label, valid_data, valid_label = random_split(X_train,labels_train,.8)
 # print("2:",train_data)
