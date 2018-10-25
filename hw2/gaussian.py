@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.lines as lines
+import scipy
 import seaborn as sns
 import pandas as pa
 import itertools
@@ -11,7 +12,7 @@ def Generate():
     num = []
     for i,(m,s) in enumerate(zip(mu,sigma)):
         a = np.random.randn(2,100)
-        points = s@a+np.reshape(m,(2,1))
+        points = scipy.linalg.sqrtm(s)@a+np.reshape(m,(2,1))
         #points=points+np.reshape(m,(2,1))
         #plot = sns.relplot(x = "x", y = "y",data = data, marker = '^', style = 'status')
         #plots.append(plot)
@@ -52,14 +53,15 @@ def scatter(num,stats,eigen,eigenv):
 def plot(plots,eigen,eigenv):
     for i,((mean,covar),plot,eig,eigv) in enumerate(zip(stats,plots,eigen,eigenv)):
         l1 = lines.Line2D([mean[0],mean[0]+np.sqrt(eig[0])*eigv[0][0]],[mean[1],mean[1]+np.sqrt(eig[0])*eigv[1][0]],color = 'g')
-        l2 = lines.Line2D([mean[0],mean[0]+np.sqrt(eig[1])*eigv[0][1]],[mean[1],mean[1]+np.sqrt(eig[1])*eigv[1][1]],color='p')
+        l2 = lines.Line2D([mean[0],mean[0]+np.sqrt(eig[1])*eigv[0][1]],[mean[1],mean[1]+np.sqrt(eig[1])*eigv[1][1]],color='r')
         plot.ax.add_line(l1)
         plot.ax.add_line(l2)
+        plt.xlim(-15, 15)
         plot.savefig("Question1-"+str(i)+".png")
 
 if __name__ == "__main__":
     num = Generate()
     stats = stats(num)
     eigen,eigenv = eigen(stats)
-    plots = rescatter(num,stats,eigen,eigenv)
+    plots = scatter(num,stats,eigen,eigenv)
     plot(plots,eigen,eigenv)

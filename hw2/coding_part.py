@@ -67,21 +67,30 @@ def feature_transform(xs,p):
         xr.append(x)
         #print(g.shape)
     return xr
-def plotter(data):
-    a = sns.relplot(kind = "line",data=pa.DataFrame(data))
-    a.set_xlabels('Feature Vector Length P')
-    a.set_ylabels('Accuracy of the Model')
-    a.savefig('Final_Question.png')
+def plotter(data, y =0):
+    if y == 0:
+        a = sns.relplot(kind = "line",data=pa.DataFrame(data))
+        a.set_xlabels('Feature Vector Length P')
+        a.set_ylabels('Accuracy of the Model')
+        a.savefig('Final_Question.png')
+    else:
+        data = pa.DataFrame(data)
+        a = sns.relplot(kind = "line",data=data)
+        a.set_xticklabels(y)
+        a.set_xlabels('Feature Vector Length P')
+        a.set_ylabels('Accuracy of the Model')
+        a.savefig('Final_Question.png')
     #plt.show()
 
 def model_validation(train_data, train_label, valid_data, valid_label):
     result1,result2 = [], []
     labels = onehot([train_label,valid_label,],classes)
     # print(train_data.shape,valid_data.shape)
+    y_axis = []
     valid_old = 10000
     train_old = 10000
     index = 0
-    for p in tqdm(range(1500,6000)):
+    for p in tqdm(range(1500,6000,100)):
         #print(train_data.shape)
         data = feature_transform([train_data,valid_data],p+1)
         #print ('#',train_data_t.shape)
@@ -94,13 +103,16 @@ def model_validation(train_data, train_label, valid_data, valid_label):
         result1.append(acc_train)
         result2.append(acc_valid)
         index  = p
-        if abs(acc_valid-valid_old)<0.1:
+        if abs(acc_valid-valid_old)<0.001:
             break
-        # valid_old = acc_valid
+        #valid_old = acc_valid
+        y_axis.append(p)
+    #print (p)
+
 
     result1 = np.array(result1)
     result2 = np.array(result2)
-    plotter({"Training Accuracy":result1,"Validation Accuracy":result2})
+    plotter({"Training Accuracy":result1,"Validation Accuracy":result2},y_axis)
     #print ("##########################",result.shape)
     # plt.plot(result1)
     # plt.plot(result2)
