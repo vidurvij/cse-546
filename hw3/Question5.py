@@ -95,11 +95,18 @@ def gradient_descent(x,y,xt,yt,stochastic,batch = 1):
     print(len(errors))
     print(len(ws))
     print(type(np.arange(0,iterations+1).tolist()))
-    plotter(np.arange(0,iterations+1).tolist(),[costs],title = "Cost_Iteration", xlabel = "Iterations", ylabel = "Cost",flag = False)
-    plotter(np.arange(0,iterations+1).tolist(),[costst],title = "Cost_Iteration_test", xlabel = "Iterations", ylabel = "Cost",flag = False)
-    plotter(np.arange(0,iterations+1).tolist(),[ws],title = "W_Iterations", xlabel = "Iterations", ylabel = "W",flag = False)
-    plotter(np.arange(0,iterations+1).tolist(),[bs],title = "b_Iterations", xlabel = "Iterations", ylabel = "b",flag = False)
-    plotter(np.arange(0,iterations+1).tolist(),[errors,errorst],title = "Missclassification Error", xlabel = "Iterations", ylabel = "Error",flag = False)
+    if stochastic:
+        plotter(np.arange(0,iterations+1).tolist(),[costs],title = "Cost_Iteration_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "Cost",flag = False)
+        plotter(np.arange(0,iterations+1).tolist(),[costst],title = "Cost_Iteration_test_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "Cost",flag = False)
+        plotter(np.arange(0,iterations+1).tolist(),[ws],title = "W_Iterations_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "W",flag = False)
+        plotter(np.arange(0,iterations+1).tolist(),[bs],title = "b_Iterations_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "b",flag = False)
+        plotter(np.arange(0,iterations+1).tolist(),[errors,errorst],title = "Missclassification Error_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "Error",flag = False)
+    if not stochastic:
+        plotter(np.arange(0,iterations+1).tolist(),[costs],title = "Cost_Iteration", xlabel = "Iterations", ylabel = "Cost",flag = False)
+        plotter(np.arange(0,iterations+1).tolist(),[costst],title = "Cost_Iteration_test", xlabel = "Iterations", ylabel = "Cost",flag = False)
+        plotter(np.arange(0,iterations+1).tolist(),[ws],title = "W_Iterations", xlabel = "Iterations", ylabel = "W",flag = False)
+        plotter(np.arange(0,iterations+1).tolist(),[bs],title = "b_Iterations", xlabel = "Iterations", ylabel = "b",flag = False)
+        plotter(np.arange(0,iterations+1).tolist(),[errors,errorst],title = "Missclassification Error", xlabel = "Iterations", ylabel = "Error",flag = False)
     return w,b
 
 
