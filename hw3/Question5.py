@@ -111,6 +111,7 @@ def gradient_descent(x,y,xt,yt,stochastic,batch = 1):
 
 
 x_train, x_test, y_train, y_test = load_data()
-# print(y_train,y_test)
-# print(x_train.shape,y_train.shape)
+print(x_test.shape,y_test.shape)
+print(x_train.shape,y_train.shape)
+ecit()
 gradient_descent(x_train,y_train.reshape(y_train.shape[0],1),x_test,y_test.reshape(y_test.shape[0],1),True,1000)
