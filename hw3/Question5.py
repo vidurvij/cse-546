@@ -71,7 +71,7 @@ def gradient_descent(x,y,xt,yt,stochastic,batch = 1):
             x_rand = x[ids]
             y_rand = y[ids]
             mu = np.reciprocal(1+np.exp(-y_rand[0:batch]*(b+x_rand[0:batch]@w)))
-            delw = np.mean((mu-1).T*(y_rand[0:batch].T*x_rand[0:batch].T),axis = 1).reshape(x.shape[1],1) + 2*(lam/iterations)*w
+            delw = np.mean((mu-1).T*(y_rand[0:batch].T*x_rand[0:batch].T),axis = 1).reshape(x.shape[1],1) + 2*(lam)*w #TODO: Check Scaling
             delb = np.mean((mu-1)*(y_rand[0:batch]))
             #print(delw.shape,delb.shape)
         if not stochastic:

@@ -34,7 +34,7 @@ def lasso(x ,y,x_valid,y_valid,lam):
     changes = []
     # while delta > .0001:
     w = w = np.zeros((x.shape[0],1))
-    for j in tqdm(range(500)):
+    for j in tqdm(range(10)):
         wold = np.copy(w)
         for i in tqdm(range(1)): #TODO: Optimize the stopping criteria
             b = np.mean(y-w.T@x)
@@ -72,6 +72,10 @@ def lasso(x ,y,x_valid,y_valid,lam):
 
 lam = model_definiton(x_train,y_train)
 errors_valid,errors_train, lams,changes,w, sums = lasso(x_train.T,y_train.T,x_valid.T,y_valid.T,lam)
+w_sorted = np.argsort(w, "mergesort")
+print(w_sorted)
+print(w)
+exit()
 plotter(lams,[errors_train,errors_valid],"Lambda vs Error","Lambda","Error", True)
 plotter(lams,[changes],"Lambda vs Change","Lambda","Number of Features in consideration", True)
 plotter(np.arange(0,len(changes)),[sums],"Cost vs Iterations", "Iterations","Cost", False)
