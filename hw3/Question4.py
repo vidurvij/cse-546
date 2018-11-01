@@ -34,7 +34,7 @@ def lasso(x ,y,x_valid,y_valid,lam):
     changes = []
     # while delta > .0001:
     w = w = np.zeros((x.shape[0],1))
-    for j in tqdm(range(20)):
+    for j in tqdm(range(500)):
         wold = np.copy(w)
         for i in tqdm(range(1)): #TODO: Optimize the stopping criteria
             b = np.mean(y-w.T@x)

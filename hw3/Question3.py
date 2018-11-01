@@ -49,7 +49,7 @@ def model_definiton(x,y):
     print (lambda_max)
     return lambda_max
 
-def plotter(x , ys , title, xlabel, ylabel, flag):
+def plotter(x , ys , title, xlabel, ylabel, flag,flag2 = False):
     if not (os.path.exists(os.path.basename(__main__.__file__[:-3]))):
         os.mkdir(os.path.basename(__main__.__file__[:-3]))
     plt.clf()
@@ -58,7 +58,8 @@ def plotter(x , ys , title, xlabel, ylabel, flag):
     plt.plot(x,y)
     if flag:
         plt.gca().invert_xaxis()
-    # plt.xscale('log')
+    if flag2:
+        plt.xscale('log')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
@@ -126,7 +127,7 @@ def Question_3():
     print("Lam:",lam)
     changes, fdrs, tprs, lams, sums = lasso(x.T,y,lam)
     print (len(lams[1:]))
-    plotter(lams[1:],[changes[1:]],title = "Number of features vs Lambda ", xlabel = "Lambda", ylabel = "Number of Features",flag = True)
+    plotter(lams[1:],[changes[1:]],title = "Number of features vs Lambda ", xlabel = "Lambda", ylabel = "Number of Features",flag = True, flag2 = True)
     plotter(fdrs[1:],[tprs[1:]],title = "Fdrs vs tprs ", xlabel = "FDRS", ylabel = "TPRS ",flag = False)
     plotter(np.arange(1,len(sums)+1), [sums], title = "Cost vs Iterations", xlabel = "Iterations", ylabel = "Cost", flag = False)
 
