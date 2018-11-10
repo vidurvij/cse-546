@@ -1,3 +1,5 @@
+#Question 3
+
 import numpy as np
 import scipy as sp
 from tqdm import tqdm
@@ -49,7 +51,7 @@ def model_definiton(x,y):
     print (lambda_max)
     return lambda_max
 
-def plotter(x , ys , title, xlabel, ylabel, flag,flag2 = False):
+def plotter(x , ys , title, xlabel, ylabel, flag,flag2 = False, flag3 = False):
     if not (os.path.exists(os.path.basename(__main__.__file__[:-3]))):
         os.mkdir(os.path.basename(__main__.__file__[:-3]))
     plt.clf()
@@ -63,7 +65,8 @@ def plotter(x , ys , title, xlabel, ylabel, flag,flag2 = False):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
-    plt.legend()
+    if flag3:
+        plt.legend(["Training error","Validation Error"])
     #plt.show()
     plt.savefig(os.path.basename(__main__.__file__[:-3])+"/"+title+".png")
 
@@ -80,9 +83,13 @@ def lasso(x,y,lam):
     wold2 = np.repeat(100,d).reshape(d,1)
     print(x.shape)
     # while delta > .0001:
-    for j in tqdm(range(20)):
+    for j in tqdm(range(500)):
         wold = np.copy(w)
-        for i in tqdm(range(1)): #TODO: Optimize the stopping criteria
+        wold2 = np.repeat(100,d).reshape(d,1)
+        while (np.max(np.abs(w-wold2))) > .01: #TODO: Optimize the stopping criteria
+            #print(np.max(np.abs(w-wold)))
+            #print("Hit")
+            wold2 = np.copy(w)
             b = np.mean(y-w.T@x)
             for k in range(x.shape[0]):
                 wj = np.copy(w)
@@ -114,7 +121,7 @@ def lasso(x,y,lam):
         fdr, tpr = question_one_metrics(w,False)
         fdrs.append(fdr)
         tprs.append(tpr)
-        change = np.count_nonzero(w-wold)
+        change = np.count_nonzero(w)
         changes.append(change)
         lams.append(lam)
         lam = lam/1.5
@@ -127,7 +134,7 @@ def Question_3():
     print("Lam:",lam)
     changes, fdrs, tprs, lams, sums = lasso(x.T,y,lam)
     print (len(lams[1:]))
-    plotter(lams[1:],[changes[1:]],title = "Number of features vs Lambda ", xlabel = "Lambda", ylabel = "Number of Features",flag = True, flag2 = True)
+    plotter(lams[1:],[changes[1:]],title = "Number of features vs Lambda ", xlabel = "Lambda", ylabel = "Number of Features",flag = True, flag2 = True, flag3 = True)
     plotter(fdrs[1:],[tprs[1:]],title = "Fdrs vs tprs ", xlabel = "FDRS", ylabel = "TPRS ",flag = False)
     plotter(np.arange(1,len(sums)+1), [sums], title = "Cost vs Iterations", xlabel = "Iterations", ylabel = "Cost", flag = False)
 

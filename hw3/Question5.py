@@ -1,3 +1,4 @@
+#QUestion %
 import numpy as np
 from mnist import MNIST
 from Question3 import *
@@ -6,7 +7,7 @@ from Question3 import *
 
 
 lam = .1
-iterations = 200
+iterations = 500
 def load_data():
     mndata = MNIST()
     X_train, labels_train = map(np.array, mndata.load_training())
@@ -81,9 +82,9 @@ def gradient_descent(x,y,xt,yt,stochastic,batch = 1):
             delw = np.mean(np.multiply((mu-1).T,(np.multiply(y.T,x.T))),axis = 1).reshape(x.shape[1],1) + 2*lam*w
             delb = np.mean(np.multiply((mu-1),(y)))
             # print(mu)
-        w = w -.1*delw
+        w = w -.01*delw
         #print("##########:",w.shape)
-        b = b - .1*delb
+        b = b - .01*delb
         cost = np.asscalar(calculate_cost(x,w,y,b))
         costt = np.asscalar(calculate_cost(xt,w,yt,b))
         p = predict(w,b,x)
@@ -104,17 +105,17 @@ def gradient_descent(x,y,xt,yt,stochastic,batch = 1):
     if stochastic:            # print(mu)            # print(mu)
         w = w - .01*delw
         w = w - .01*delw
-        plotter(np.arange(0,iterations+1).tolist(),[costs],title = "Cost_Iteration_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "Cost",flag = False)
-        plotter(np.arange(0,iterations+1).tolist(),[costst],title = "Cost_Iteration_test_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "Cost",flag = False)
+        plotter(np.arange(0,iterations+1).tolist(),[costs,costst],title = "Cost_Iteration_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "Cost",flag3 = True,flag = False)
+        #plotter(np.arange(0,iterations+1).tolist(),[costst],title = "Cost_Iteration_test_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "Cost",flag = False)
         plotter(np.arange(0,iterations+1).tolist(),[ws],title = "W_Iterations_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "W",flag = False)
         plotter(np.arange(0,iterations+1).tolist(),[bs],title = "b_Iterations_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "b",flag = False)
-        plotter(np.arange(0,iterations+1).tolist(),[errors,errorst],title = "Missclassification Error_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "Error",flag = False)
+        plotter(np.arange(0,iterations+1).tolist(),[errors,errorst],title = "Missclassification Error_Stochastic_"+str(batch), xlabel = "Iterations", ylabel = "Error",flag = False,flag3= True)
     if not stochastic:
-        plotter(np.arange(0,iterations+1).tolist(),[costs, costst],title = "Cost_Iteration", xlabel = "Iterations", ylabel = "Cost",flag = False)
+        plotter(np.arange(0,iterations+1).tolist(),[costs, costst],title = "Cost_Iteration", xlabel = "Iterations", ylabel = "Cost",flag = False, flag3 = True)
         #plotter(np.arange(0,iterations+1).tolist(),[costst],title = "Cost_Iteration_test", xlabel = "Iterations", ylabel = "Cost",flag = False)
         plotter(np.arange(0,iterations+1).tolist(),[ws],title = "W_Iterations", xlabel = "Iterations", ylabel = "W",flag = False)
         plotter(np.arange(0,iterations+1).tolist(),[bs],title = "b_Iterations", xlabel = "Iterations", ylabel = "b",flag = False)
-        plotter(np.arange(0,iterations+1).tolist(),[errors,errorst],title = "Missclassification Error", xlabel = "Iterations", ylabel = "Error",flag = False)
+        plotter(np.arange(0,iterations+1).tolist(),[errors,errorst],title = "Missclassification Error", xlabel = "Iterations", ylabel = "Error",flag = False, flag3 = True)
     return w,b
 
 def crossmult(z):
@@ -122,10 +123,14 @@ def crossmult(z):
     print((z@z.T))
     return z@z.T
 
-def Newton_method(x,y):
+def Newton_method(x,y,xt,yt):
     w = np.zeros((x.shape[1],1))
     b = 0
-    for j in range(2):
+    errors = []
+    costs = []
+    costst = []
+    errorst = []
+    for j in range(50):
         mu = np.reciprocal(1+np.exp(np.multiply(-y,(b+x@w))))
         # print("--------",x.shape,y.shape,mu.shape,(np.multiply(y,x)).shape)
         # print("@@@@@@@@@@@",(np.multiply(np.multiply(mu,(mu-1)),np.apply_along_axis(crossmult,1,np.multiply(y_train.reshape(y_train.shape[0],1),x_train)).reshape(x.shape[0],1))).shape)
@@ -145,16 +150,22 @@ def Newton_method(x,y):
         w = w + .1 * v_w
         b = b + .1 * v_b
         p = predict(w,b,x)
+        pt = predict(w,b,xt)
+        cost = calculate_cost(x,w,y,b)
+        costt =  calculate_cost(xt,w,yt,b)
+        costs.append(cost)
+        costst.append(costt)
         error = compute_error(p,y)
-        print("Ye le penchow Error:", error)
-
+        errort = compute_error(pt,yt)
+        errorst.append(errort)
+        errors.append(error)
+        print("Error:", error)
+    plotter(np.arange(0,10).tolist(),[costs, costst],title = "Cost_Iteration_Newton", xlabel = "Iterations", ylabel = "Cost",flag = False, flag3 = True)
+    plotter(np.arange(0,10).tolist(),[errors,errorst],title = "Missclassification Error_Newton", xlabel = "Iterations", ylabel = "Error",flag = False, flag3 = True)
+    return errors, errorst, costs,costst
 x_train, x_test, y_train, y_test = load_data()
 print(x_test.shape,y_test.shape)
 print(x_train.shape,y_train.shape)
-gradient_descent(x_train,y_train.reshape(y_train.shape[0],1),x_test,y_test.reshape(y_test.shape[0],1),False,1000)
-Newton_method(x_train,y_train.reshape(y_train.shape[0],1))
-exit()
-
-
-a = np.apply_along_axis(crossmult,1,np.multiply(y_train.reshape(y_train.shape[0],1),x_train))
-print(a.shape)
+# gradient_descent(x_train,y_train.reshape(y_train.shape[0],1),x_test,y_test.reshape(y_test.shape[0],1),True,1)
+# exit()
+errors = Newton_method(x_train,y_train.reshape(y_train.shape[0],1),x_test,y_test.reshape(y_test.shape[0],1))

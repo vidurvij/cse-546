@@ -1,8 +1,8 @@
 from XrayDataset import XrayDataset
-import torch.nn as nn/
+import torch.nn as nn
 from torch.optim import lr_scheduler
 import torch.optim as optim
-import numpy as np/
+import numpy as np
 from torch.utils.data import Dataset, DataLoader,random_split
 from Transforms import Rescale, Normalize
 from torchvision import transforms, utils, models
