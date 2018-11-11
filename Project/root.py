@@ -12,15 +12,15 @@ from model import *
 import warnings
 warnings.filterwarnings("ignore")
 
-#dataset = XrayDataset(csv_file = "Data_Entry_2017.csv",root_dir = "images")
-dataset = XrayDataset(csv_file = "Data_Entry_2017.csv",root_dir = "images",transform = transforms.Compose([Rescale(224),Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])]))
-train, test = random_split(dataset,lengths = (int(.8*len(dataset)),int(.2*len(dataset))))
+#dataset = XrayDataset(csv_file = "Data_Entry_2017.csv",root_dir = "/home/vidur/Desktop/images")
+dataset = XrayDataset(csv_file = "Data_Entry.csv",root_dir = "/home/vidur/Desktop/images",transform = transforms.Compose([Rescale(224),Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])]))
+train, test = random_split(dataset,lengths = (int(.8*len(dataset)),len(dataset)-int(.8*len(dataset))))
 train, valid = random_split(train,lengths = (int(.9*len(train)),len(train)-int(.9*len(train))))
-train[1]
+print(valid[1]['image'].shape)
 model_ft = models.resnet152(pretrained=True)
 
-# for i,parameter in enumerate(model_ft.parameters()):
-#     print(i)
+# for i,parameter in enumerate(valid):
+#      print(i)
 for param in model_ft.parameters():
     param.requires_grad = False
 num_ftrs = model_ft.fc.in_features
@@ -31,4 +31,4 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 Train_loader = DataLoader(train,batch_size = 5)
 Valid_loader = DataLoader(valid,batch_size = 5)
 
-model_ft = train_model(model_ft,train,valid,criterion,optimizer,exp_lr_scheduler)
+model_ft = train_model(model_ft,Train_loader,Valid_loader,criterion,optimizer,exp_lr_scheduler)

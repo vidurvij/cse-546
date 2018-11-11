@@ -9,11 +9,14 @@ import matplotlib.pyplot as plt
 import time
 import os
 import copy
-def train_model(model,train, valid, criterion, optimizer, scheduler, num_epochs=25):
-    since = time.time()
+from tensorboardX import SummaryWriter
 
+
+def train_model(model,train, valid, criterion, optimizer, scheduler, num_epochs=25):
+    writer = SummaryWriter()
+    since = time.time()
     best_model_wts = copy.deepcopy(model.state_dict())
-    best_acc = 0.0
+    best_acc = 0
     model.train()
 
     for epoch in range(num_epochs):
@@ -26,39 +29,43 @@ def train_model(model,train, valid, criterion, optimizer, scheduler, num_epochs=
         running_corrects = 0
 
         # Iterate over data.
-        for inputs, labels in train:
+        for i, sample in enumerate(train):
+            # print(i)
             # inputs = inputs.to(device)
             # labels = labels.to(device)
-
+            inputs, labels = sample['image'], sample['afflictions']
+            #print(labels)
             # zero the parameter gradients
             optimizer.zero_grad()
-
-            # forward
-            # track history if only in train
-            print("################",inputs)
             outputs = model(inputs)
-            print(outputs)
-            _, preds = torch.max(outputs, 1)
+            outputs = torch.round(torch.sigmoid(outputs))
             loss = criterion(outputs, labels)
-
-            # backward + optimize only if in training phase
+            #backward + optimize only if in training phase
             loss.backward()
             optimizer.step()
 
             # statistics
             running_loss += loss.item() * inputs.size(0)
-            running_corrects += torch.sum(preds == labels.data)
+            running_corrects += torch.sum(labels == outputs)
+        for i, sample in enumerate(valid) :
+            inputs, labels = sample['image'], sample['afflictions']
+            outputs = model(inputs)
+            outputs = torch.round(torch.sigmoid(outputs))
+            loss = criterion(outputs, labels)
+            running_loss += loss.item() * inputs.size(0)
+            running_corrects += torch.sum(labels == outputs)
 
-            epoch_loss = running_loss / dataset_sizes[phase]
-            epoch_acc = running_corrects.double() / dataset_sizes[phase]
 
-            print('{} Loss: {:.4f} Acc: {:.4f}'.format(
-                phase, epoch_loss, epoch_acc))
+        epoch_loss = running_loss / len(train)
+        epoch_acc = running_corrects.double() / len(train)
 
-            # deep copy the model
-            if phase == 'val' and epoch_acc > best_acc:
-                best_acc = epoch_acc
-                best_model_wts = copy.deepcopy(model.state_dict())
+        print('{} Loss: {:.4f} Acc: {:.4f}'.format(
+            phase, epoch_loss, epoch_acc))
+        writer.add_scalar('data/scalar1', epoch_loss, i)
+        writer.add_scalar('data/scalar2', epoch_acc, i)
+        if  epoch_acc > best_acc:
+            best_acc = epoch_acc
+            best_model_wts = copy.deepcopy(model.state_dict())
 
         print()
 
