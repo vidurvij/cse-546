@@ -27,7 +27,7 @@ class XrayDataset(Dataset):
         afflictions = self.afflictions_root.iloc[idx, 1]
         afflictions = afflictions.split('|')
         index = [self.directory.index(x) for x in afflictions]
-        afflictions = np.repeat(-1,len(self.directory))
+        afflictions = np.zeros(len(self.directory))
         afflictions[index] = 1
         afflictions = torch.from_numpy(afflictions).float()
         sample = {'image': image, 'afflictions': afflictions}

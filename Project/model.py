@@ -10,9 +10,11 @@ import time
 import os
 import copy
 from tensorboardX import SummaryWriter
+from torchviz import make_dot
 
 
 def train_model(model,train, valid, criterion, optimizer, scheduler, num_epochs=25):
+    batch_size = train.batch_size
     writer = SummaryWriter()
     since = time.time()
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -39,33 +41,40 @@ def train_model(model,train, valid, criterion, optimizer, scheduler, num_epochs=
             torch.set_grad_enabled(True)
             optimizer.zero_grad()
             outputs = model(inputs)
-            outputs = torch.round(torch.sigmoid(outputs))
+            outputs1 = torch.round(torch.sigmoid(outputs))
+            # print(outputs)
             loss = criterion(outputs, labels)
-            # print(loss)
+            # make_dot(loss).view()
+            # exit()
             #backward + optimize only if in training phase
             loss.backward()
-            for key,value in model.state_dict().items():
-                print(value.grad)
+            print(loss)
+            #print(loss.backward())
+            # for key,value in model.state_dict().items():
+            #     print(value.grad)
             optimizer.step()
 
             # statistics
             # print(labels ==  sum)
             running_loss += loss.item() * inputs.size(0)
-            running_corrects += torch.sum(labels == outputs)
+            running_corrects += torch.equal(labels[0:batch_size],outputs[0:batch_size])
+            #print (running_corrects)
         for i, sample in enumerate(valid) :
             inputs, labels = sample['image'], sample['afflictions']
             outputs = model(inputs)
             outputs = torch.round(torch.sigmoid(outputs))
+            #print(outputs)
             loss = criterion(outputs, labels)
             running_loss += loss.item() * inputs.size(0)
-            running_corrects += torch.sum(labels == outputs)
+            running_corrects += torch.equal(labels[0:batch_size],outputs[0:batch_size])
+            # print(running_corrects)
 
 
         epoch_loss = running_loss / len(train)
-        epoch_acc = running_corrects.double() / len(train)
+        epoch_acc = running_corrects / len(train)
 
         print('{} Loss: {:.4f} Acc: {:.4f}'.format(
-            i, epoch_loss, epoch_acc))
+            epoch, epoch_loss, epoch_acc))
         writer.add_scalar('data/scalar1', epoch_loss, i)
         writer.add_scalar('data/scalar2', epoch_acc, i)
         if  epoch_acc > best_acc:
