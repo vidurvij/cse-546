@@ -36,15 +36,20 @@ def train_model(model,train, valid, criterion, optimizer, scheduler, num_epochs=
             inputs, labels = sample['image'], sample['afflictions']
             #print(labels)
             # zero the parameter gradients
+            torch.set_grad_enabled(True)
             optimizer.zero_grad()
             outputs = model(inputs)
             outputs = torch.round(torch.sigmoid(outputs))
             loss = criterion(outputs, labels)
+            # print(loss)
             #backward + optimize only if in training phase
             loss.backward()
+            for key,value in model.state_dict().items():
+                print(value.grad)
             optimizer.step()
 
             # statistics
+            # print(labels ==  sum)
             running_loss += loss.item() * inputs.size(0)
             running_corrects += torch.sum(labels == outputs)
         for i, sample in enumerate(valid) :
@@ -60,7 +65,7 @@ def train_model(model,train, valid, criterion, optimizer, scheduler, num_epochs=
         epoch_acc = running_corrects.double() / len(train)
 
         print('{} Loss: {:.4f} Acc: {:.4f}'.format(
-            phase, epoch_loss, epoch_acc))
+            i, epoch_loss, epoch_acc))
         writer.add_scalar('data/scalar1', epoch_loss, i)
         writer.add_scalar('data/scalar2', epoch_acc, i)
         if  epoch_acc > best_acc:
