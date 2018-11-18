@@ -18,7 +18,7 @@ class Rescale(object):
 
         img = transform.resize(image, (self.output_size,self.output_size))
 
-        #print ("###########",img.shape)
+        #print ("Rescale: ###########",img.shape)
         return {'image': img, 'afflictions': afflictions}
 
 class Normalize(object):
@@ -33,7 +33,8 @@ class Normalize(object):
         image = torch.from_numpy(image)
         function = transforms.Normalize(self.parameters1,self.parameters2)
         img = function(image)
-        img = img.numpy()
-
+        img = img.permute(2,0,1).float()
+        #img = img.numpy()
+        #print ("Normalize: ###########",img.shape)
         #print ("###########",img.shape)
         return {'image': img, 'afflictions': afflictions}
