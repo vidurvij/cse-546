@@ -7,7 +7,7 @@ import torch.optim as optim
 import numpy as np
 from torch.utils.data import Dataset, DataLoader,random_split
 from Transforms import Rescale, Normalize
-from torchvision import transforms, utils, models
+from torchvision import transforms, utils, models   
 import matplotlib.pyplot as plt
 from model import *
 
