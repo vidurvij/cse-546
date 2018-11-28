@@ -32,8 +32,8 @@ class Normalize(object):
         image, afflictions = sample['image'], sample['afflictions']
         image = torch.from_numpy(image)
         function = transforms.Normalize(self.parameters1,self.parameters2)
-        img = function(image)
-        img = img.permute(2,0,1).float()
+        img = function(image).permute(2,0,1).float()
+        # img = img.permute(2,0,1).float()
         #img = img.numpy()
         #print ("Normalize: ###########",img.shape)
         #print ("###########",img.shape)

@@ -4,6 +4,7 @@ import os
 import torch
 from skimage import io, transform
 import numpy as np
+from tqdm import tqdm
 class XrayDataset(Dataset):
 
     def __init__(self, csv_file, root_dir, transform=None):
@@ -22,8 +23,8 @@ class XrayDataset(Dataset):
                                 self.afflictions_root.iloc[idx, 4])
         #print("11111111111111111111111111111111111:",img_name)
         image = io.imread(img_name)
-        image = image.reshape(image.shape[0],image.shape[1],1)
-        image = np.repeat(image,3,-1)
+        image = (np.repeat(image.reshape(image.shape[0],image.shape[1],1),3,-1)/255)
+        # image = np.repeat(image,3,-1)
         afflictions = self.afflictions_root.iloc[idx, 1]
         afflictions = afflictions.split('|')
         index = [self.directory.index(x) for x in afflictions]
@@ -34,7 +35,20 @@ class XrayDataset(Dataset):
         #print ("Original: ###########",image.shape)
         if self.transform:
             sample = self.transform(sample)
+        # print(self.afflictions_root.iloc[idx,4])
+        sample['name'] = self.afflictions_root.iloc[idx,4]
+        # sample['image'] = sample['image'].numpy()
+
+        # print(sample)
         return sample
-
-
+    def get_labels(self):
+        lab = []
+        for i in tqdm(range(len(self.afflictions_root))):
+            afflictions = (self.afflictions_root.iloc[i, 1]).split('|')
+            index = [self.directory.index(x) for x in afflictions]
+            afflictions = np.zeros(len(self.directory))
+            afflictions[index] = 1
+            lab.append(afflictions)
+        lab = np.array(lab)
+        return lab
     #sdef view(index):
