@@ -3,7 +3,7 @@ import torch.nn.functional as F
 
 
 class Net(nn.Module):
-    def __init__(self,part, M = 1, p = 1, N = 1):
+    def __init__(self,part, M = 1, p = 1, N = 14, p2 = 5):
         if part == 1 :
             super(Net, self).__init__()
             self.fc1 = nn.Linear(3072, 10, True)
@@ -17,7 +17,7 @@ class Net(nn.Module):
         if part == 3:
             super(Net, self).__init__()
             self.conv1 = nn.Conv2d(3, M, p, bias = True)
-            self.pool = nn.MaxPool2d(N)
+            self.pool = nn.MaxPool2d(p2,N)
             self.fc1 = nn.Linear(int(M*((33-p)/N)**2),10, True)
             self.execute = self.c
 
@@ -46,6 +46,7 @@ class Net(nn.Module):
 
     def c(self,x):
         x = self.pool(F.relu(self.conv1(x)))
+        x = x.reshape(x.shape[0],x.shape[1]*x.shape[2]*x.shape[3])
         x = self.fc1(x)
         return x
 
