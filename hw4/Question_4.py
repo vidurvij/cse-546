@@ -26,6 +26,21 @@ def distance(centers, point):
     cluster = np.argmin(distances)
     return np.min(distances), cluster
 
+def viewer(centers):
+    plt.clf()
+    fig, axs = plt.subplots(centers.shape[0], sharex= True, sharey= True, figsize = (8,30))
+    # axs.sha[e]
+    a = int(np.sqrt(centers.shape[1]))
+    # centers = (centers * 255).astype(int)
+    # print(centers.dtype)
+    # exit()
+    # print(centers[1].shape)
+    for i in range(centers.shape[0]):
+        axs[i].imshow(centers[i].reshape(a,a))
+    plt.title("Kmeans "+str(centers.shape[0])+" Clusters")
+    plt.savefig("kmeans/kmeans"+str(centers.shape[0])+"i.png")
+    plt.show()
+
 def Super(train, d):
     center = np.zeros((d,train.shape[1]))
     distances = np.zeros((train.shape[0]))
@@ -55,8 +70,8 @@ if __name__ == "__main__" :
     i = 7
     # train = train.tolist()
     # while i < train.shape[0] :
-    for d in tqdm([5, 10, 15]) :
-        centers = np.random.random((d, train.shape[1]))
+    for d in tqdm([20]) :
+        centers = train[np.random.choice(train.shape[0],d)]#np.random.random((d, train.shape[1]))
         lold = 0
         loss = []
         total = 100000
@@ -79,14 +94,17 @@ if __name__ == "__main__" :
             for i in range(train.shape[0]):
                 cum[clusters[i]] += train[i]
                 count[clusters[i]] += 1
+            # print(count)
             centers = np.divide(cum,count)
-        plt.plot(loss,".-", label = str(d)+" Clusters")
-    plt.grid()
-    plt.label()
-    plt.xlabel("Iterations")
-    plt.ylabel("Cumulative Distance")
-    plt.show()
-    if super:
-        plt.savefig("K-Means ++")
-    if not super:
-        plt.savefig("K-Means")
+
+    #     plt.plot(loss,".-", label = str(d)+" Clusters")
+    # plt.grid()
+    # plt.legend()
+    # plt.xlabel("Iterations")
+    # plt.ylabel("Cumulative Distance")
+    # # plt.show()
+    # if super:
+    #     plt.savefig("kmeans/K-Meanspp20.png")
+    # if not super:
+    #     plt.savefig("kmeans/K-Means20.png")
+    viewer(centers)
