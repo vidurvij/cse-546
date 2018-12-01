@@ -8,15 +8,16 @@ from tqdm import tqdm
 
 
 # A part
-rate = .002
-momentum = 0.25
-M = 100
-net_a = Net(3, M = M, p = 5, p2 = 5, N = 14)
+rate = .005
+momentum = 0.5
+M = 200
+N = 6
+net_a = Net(3, M = M, p = 5, p2 = 4, N = N)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net_a.parameters(), lr=rate, momentum=momentum)
 epochs = 50
 runner = 0
-writer = SummaryWriter("runsc/N3l"+str(rate)+"m"+str(momentum)+"Size"+str(M)+"-Loss")
+writer = SummaryWriter("runsc/N3l"+str(rate)+"m"+str(momentum)+"Size"+str(M)+"Skip"+str(N)+"-Loss")
 writer2 = SummaryWriter("runsc/N3l"+str(rate)+"m"+str(momentum)+"Size"+str(M)+"-Loss")
 for step in tqdm(range(epochs)):
     running_loss = 0.0
