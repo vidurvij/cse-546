@@ -29,6 +29,7 @@ class Net(nn.Module):
             self.fc1 = nn.Linear(32 * 5 * 5, 120)
             self.fc2 = nn.Linear(120, 84)
             self.fc3 = nn.Linear(84, 10)
+            self.soft = nn.Softmax(0)
             self.execute = self.d
 
     def forward(self, x):
@@ -63,5 +64,5 @@ class Net(nn.Module):
         x = x.view(-1, 32 * 5 * 5)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = self.fc3(x)
+        x = self.soft(self.fc3(x))
         return x
