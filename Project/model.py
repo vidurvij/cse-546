@@ -11,9 +11,9 @@ import os
 import copy
 from tensorboardX import SummaryWriter
 from torchviz import make_dot
+from tqdm import tqdm
 
-
-def train_model(model,train, valid, criterion, optimizer, num_epochs=3):
+def train_model(model,train, valid, criterion, optimizer, num_epochs=1):
     np.set_printoptions(precision = 4)
     batch_size = train.batch_size
     writer = SummaryWriter()
@@ -24,7 +24,7 @@ def train_model(model,train, valid, criterion, optimizer, num_epochs=3):
     model.train()
     total = len(train.dataset)+len(valid.dataset)
     print(total)
-    for epoch in range(num_epochs):
+    for epoch in tqdm(range(num_epochs)):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
         print('-' * 10)
 
@@ -34,15 +34,19 @@ def train_model(model,train, valid, criterion, optimizer, num_epochs=3):
         running_corrects = 0
 
         # Iterate over data.
-        for i, sample in enumerate(train):
+        for i, sample in enumerate(tqdm(train)):
+            # model.eval()
             # print(i)
             # inputs = inputs.to(device)
             # labels = labels.to(device)
             inputs, labels = sample['image'], sample['afflictions']
             #print(labels)
             # zero the parameter gradients
+
             torch.set_grad_enabled(True)
+
             optimizer.zero_grad()
+
             outputs = model(inputs)
 
             # print(outputs)
@@ -54,7 +58,7 @@ def train_model(model,train, valid, criterion, optimizer, num_epochs=3):
             # exit()
             #backward + optimize only if in training phase
             loss.backward()
-            print(loss)
+            #print(loss)
             #print(loss.backward())
             # for key,value in model.state_dict().items():
             #     print(value.grad)
@@ -66,10 +70,10 @@ def train_model(model,train, valid, criterion, optimizer, num_epochs=3):
             # print(type(running_corrects))
             # print(torch.round(outputs1))
             running_corrects += torch.sum(torch.eq(labels,torch.round(outputs1)),0)
-            print
+            #print
             # print(list(running_corrects.numpy()))
             # print (running_corrects.type())
-        for i, sample in enumerate(valid) :
+        for i, sample in enumerate(tqdm(valid)) :
             inputs, labels = sample['image'], sample['afflictions']
             outputs2 = model(inputs)
             outputs3 = torch.sigmoid(outputs2)

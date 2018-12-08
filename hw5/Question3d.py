@@ -16,9 +16,9 @@ net_a = Net(4, M = M, p = 5, p2 = 4, N = N)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net_a.parameters(), lr=rate, momentum=momentum)
 epochs = 50
-runner = 0
-writer = SummaryWriter("runsd/N4Base-7Loss")
-writer2 = SummaryWriter("runsd/N4Base-7-Loss")
+#runner = 0
+writer = SummaryWriter("runsd/N4Base-15Loss")
+writer2 = SummaryWriter("runsd/N4Base-15-Loss")
 for step in tqdm(range(epochs)):
     running_loss = 0.0
     train_acc = 0
@@ -39,10 +39,10 @@ for step in tqdm(range(epochs)):
         optimizer.step()
         running_loss += loss.item()
 
-        runner += 1
+        #runner += 1
         predictions = torch.argmax(output,1)
         train_acc += torch.sum(torch.eq(predictions,label)).item()
-    writer.add_scalar('loss', running_loss, runner)
+    writer.add_scalar('loss', running_loss, step)
     train_acc /= len(trainset)
     # print(train_acc)
     test_acc = 0

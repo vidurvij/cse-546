@@ -1,30 +1,31 @@
 from __future__ import print_function, division
 
-from XrayDataset import XrayDataset
+#from XrayDataset2 import XrayDataset # For normal
+from XrayDataset3 import XrayDataset # For self learn
 import torch.nn as nn
 from torch.optim import lr_scheduler
 import torch.optim as optim
 import numpy as np
 from torch.utils.data import Dataset, DataLoader,random_split
 from Transforms import Rescale, Normalize
-from torchvision import transforms, utils, models   
+from torchvision import transforms, utils, models
 import matplotlib.pyplot as plt
-from model import *
+from model_self_learn import *
 
 import warnings
 warnings.filterwarnings("ignore")
 
 #dataset = XrayDataset(csv_file = "Data_Entry_2017.csv",root_dir = "/home/vidur/Desktop/images")
-dataset = XrayDataset(csv_file = "Data_Entry.csv",root_dir = "/home/vidur/Desktop/images",transform = transforms.Compose([Rescale(224),Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])]))
+dataset = XrayDataset(csv_file = "Data_Entry.csv",root_dir = "/home/vidur/Desktop/ImageXrayRescaled",transform = transforms.Compose([Rescale(224),Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])]))
 train, test = random_split(dataset,lengths = (int(.8*len(dataset)),len(dataset)-int(.8*len(dataset))))
 train, valid = random_split(train,lengths = (int(.8*len(train)),len(train)-int(.8*len(train))))
-print(valid[1]['image'].shape)
-model_ft = models.resnet18(pretrained=True)
+
+model_ft = torch.load("model.pth")
 # add = torch.nn.Sequential(torch.nn.sigmoid)
 # for i,parameter in enumerate(valid):
 #      print(i)
 for param in model_ft.parameters():
-    param.requires_grad = True
+    param.requires_grad = False
 num_ftrs = model_ft.fc.in_features
 model_ft.fc = nn.Linear(num_ftrs, 15)
 # for key,value in model_ft.state_dict().items():
@@ -42,7 +43,7 @@ optimizer = optim.Adam(model_ft.parameters())
 Train_loader = DataLoader(train,batch_size = 10)
 Valid_loader = DataLoader(valid,batch_size = 10)
 Test_loader = DataLoader(test, batch_size = 10)
+print(type(Train_loader.dataset.indices))
 
-
-model_ft = train_model(model_ft,Train_loader,Train_loader,criterion,optimizer)
-torch.save(model_ft,"model.pth")
+model_ft = train_model(model_ft,Train_loader,Train_loader,criterion,optimizer,3)
+torch.save(model_ft,"model2.pth")
