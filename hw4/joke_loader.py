@@ -1,12 +1,13 @@
 import numpy as np
 
 def data_load(matrix = False):
-    n = 24983
-    m = 100
+    n = 1000
+    m = 500
     # if matrix:
-    train_mr = np.zeros((n,m))
+    train_mr = np.zeros((n,m))/0
+    print(train_mr)
     # print(train_m.shape)
-    train  = open("/home/vidur/Desktop/cse 546/hw4/jokes/train.txt",'r')
+    train  = open("/home/vidur/Desktop/Cse 546/cse-546/hw4/jokes/train.txt",'r')
     for i in train:
         i = i.strip()
         # print(i)
@@ -17,12 +18,14 @@ def data_load(matrix = False):
         # print(type(a[0]))
         # print(train_m.shape)
         train_mr[a[0]-1,a[1]-1] = a[2]
+
     train.close()
+    # print(train_mr)
         # print(train_m)
     # if not matrix:
     train_m = []
     # print(train_m.shape)
-    train  = open("/home/vidur/Desktop/cse 546/hw4/jokes/train.txt",'r')
+    train  = open("/home/vidur/Desktop/Cse 546/cse-546/hw4/jokes/train.txt",'r')
     for i in train:
         i = i.strip()
         # print(i)
@@ -34,7 +37,7 @@ def data_load(matrix = False):
         # print(train_m.shape)
         train_m.append(a)
     train.close()
-    test = open("/home/vidur/Desktop/cse 546/hw4/jokes/test.txt",'r')
+    test = open("/home/vidur/Desktop/Cse 546/cse-546/hw4/jokes/test.txt",'r')
     test_m = []
     for i in test:
         i = i.strip()
