@@ -10,14 +10,14 @@ from tqdm import tqdm
 # A part
 rate = .002
 momentum = 0.25
-M = 500
+M = 150
 net_a = Net(2, M = M)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net_a.parameters(), lr=rate, momentum=momentum)
 epochs = 50
 runner = 0
-writer = SummaryWriter("runsb/N2l"+str(rate)+"m"+str(momentum)+"Size"+str(M)+"-Loss")
-writer2 = SummaryWriter("runsb/N2l"+str(rate)+"m"+str(momentum)+"Size"+str(M)+"-Loss")
+writer = SummaryWriter("runsb/N2lFinal")
+writer2 = SummaryWriter("runsb/N2lFinal")
 for step in tqdm(range(epochs)):
     running_loss = 0.0
     train_acc = 0
@@ -37,10 +37,11 @@ for step in tqdm(range(epochs)):
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
-        writer.add_scalar('loss', running_loss, runner)
+
         runner += 1
         predictions = torch.argmax(output,1)
         train_acc += torch.sum(torch.eq(predictions,label)).item()
+    writer.add_scalar('loss', running_loss, step)
     train_acc /= len(trainset)
     # print(train_acc)
     test_acc = 0

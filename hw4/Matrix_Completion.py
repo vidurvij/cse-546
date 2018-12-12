@@ -184,6 +184,7 @@ class Matrix_Completion():
         np.save("Train.npy",np.array(errorm))
         np.save("Test.npy",np.array(errort))
 
+<<<<<<< HEAD
     # def cross_validation_als_1(self):
     #     d_range = [1]
     #     old_error = np.array(100000)
@@ -247,10 +248,24 @@ class Matrix_Completion():
 
 
 
+=======
+def error(predict,trainl):
+    error2 = np.zeros(1000)
+    error2_c = np.zeros(1000)
+    for i in trainl:
+        error2[int(i[0]-1)] += np.abs(i[2] - predict[int(i[0]-1),int(i[1]-1)])
+        error2_c[int(i[0]-1)] += 1
+    error2 = error2/error2_c
+    return np.average(error2)
+>>>>>>> 9c2dd3d62afce27fc4bf74e990e8c45f52e36d2d
 
 def SVD(train,trainl,test):
+    print(trainl.shape,train.shape,test.shape)
+    exit()
     d_range = [1,2,5,10,20,50]
     errors = []
+    errors2 = []
+    errors2t = []
     errorst = []
     for d in d_range: #TODO: Demean
         a, b,c = svds(train,d)
@@ -261,22 +276,30 @@ def SVD(train,trainl,test):
         error_test = 0
         error_train = 0
         for i in trainl:
+            # print(i.shape)
+            # exit()
             # print(type(i[2]),type(tr[1,2]))
             error_train += np.square(np.abs(i[2] - tr[int(i[0])-1, int(i[1]) - 1]))
-        error_train /= test.shape[0]
+        error_train /= trainl.shape[0]
         for i in test:
             # print(type(i[2]),type(tr[1,2]))
             error_test += np.square(np.abs(i[2] - tr[int(i[0])-1, int(i[1]) - 1]))
         error_test /= test.shape[0]
+        error2t = error(tr,test)
+        error2 = error(tr,trainl)
         # print(error_train.shape)
         # exit()
+        errors2t.append(error2t)
+        errors2.append(error2)
         errors.append(error_train)
         errorst.append(error_test)
-    plt.plot(d_range,errors,"-.", label = "Training")
-    plt.plot(d_range,errorst,"-.", label = "Testing" )
+    plt.plot(d_range,errors2,"-.", label = "Training")
+    plt.plot(d_range,errors2t,"-.", label = "Testing" )
+    plt.title("Mean absolute Error")
     plt.grid()
     plt.legend()
     # plt.show()
+<<<<<<< HEAD
     plt.savefig("SVD.png")
 
 
@@ -285,3 +308,6 @@ def Q5(train,trainl,test):
     u = np.ones((1000,1))
     v = np.nanmean(train,axis = 1)
     print(v.shape)
+=======
+    plt.savefig("SVD2.png")
+>>>>>>> 9c2dd3d62afce27fc4bf74e990e8c45f52e36d2d
