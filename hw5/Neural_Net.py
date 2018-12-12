@@ -23,6 +23,7 @@ class Net(nn.Module):
 
         if part == 4:
             super(Net, self).__init__()
+<<<<<<< HEAD
             self.conv1 = nn.Conv2d(3,96,3)
             self.conv2 = nn.Conv2d(96,96,3)
             self.pool  = nn.MaxPool2d(3,2)
@@ -31,6 +32,19 @@ class Net(nn.Module):
             self.conv5 = nn.Conv2d(192,192,1)
             self.conv6 = nn.Conv2d(192,10,1)
             self.gpool = nn.AvgPool2d(2)
+=======
+            self.conv1 = nn.Conv2d(3, 16, 3)
+            self.pool = nn.MaxPool2d(2, 2)
+            self.conv2 = nn.Conv2d(16, 32, 3)
+            self.conv3 = nn.Conv2d(32,256,5)
+            self.fc1 = nn.Linear(256 * 1 * 1, 120)
+            #self.batch1 = nn.BatchNorm1d(32*5*5)
+            self.fc2 = nn.Linear(120, 84)
+            #self.batch2 = nn.BatchNorm1d(120)
+            self.fc3 = nn.Linear(84, 10)
+            #self.batch3 = nn.BatchNorm1d(84)
+            #self.soft = nn.Softmax(0)
+>>>>>>> 665b3f83c5fc7ea560a015a2564cbb762c7e517e
             self.execute = self.d
 
     def forward(self, x):
@@ -58,6 +72,7 @@ class Net(nn.Module):
         return x
 
     def d(self,x):
+<<<<<<< HEAD
         x = (torch.relu(self.conv1(x)))
         x = (torch.relu(self.conv2(x)))
         x = self.pool(x)
@@ -77,4 +92,18 @@ class Net(nn.Module):
         # x = self.fc3(x)
         x = x.reshape(x.shape[0],10)
 
+=======
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = self.pool(F.relu(self.conv3(x)))
+        #print("............",x.shape)
+        #exit()
+        x = x.view(-1, 256 * 1 * 1 )
+        #x = self.batch1(x)
+        x = torch.sigmoid(self.fc1(x))
+        #x = self.batch2(x)
+        x = torch.sigmoid(self.fc2(x))
+        #x = self.batch3(x)
+        x = (self.fc3(x))
+>>>>>>> 665b3f83c5fc7ea560a015a2564cbb762c7e517e
         return x
