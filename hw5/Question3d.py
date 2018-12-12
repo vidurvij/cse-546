@@ -17,8 +17,8 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net_a.parameters(), lr=rate, momentum=momentum)
 epochs = 50
 runner = 0
-writer = SummaryWriter("runsd/N4Base-7Loss")
-writer2 = SummaryWriter("runsd/N4Base-7-Loss")
+writer = SummaryWriter("runse/N4Base--Loss")
+writer2 = SummaryWriter("runse/N4Base--Loss")
 for step in tqdm(range(epochs)):
     running_loss = 0.0
     train_acc = 0

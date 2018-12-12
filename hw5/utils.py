@@ -10,13 +10,14 @@ def onehot(x,label):
     return xhot
 
 def Data_Generation():
+    np.random.seed(458789)
     n = 50
     xs = []
     ys = []
     for i in range(1,n+1,1):
         f = 0
         # print(i)
-        x = i/(n-1)
+        x = (i-1)/(n-1)
         xs.append(x)
         for k in range(1,5,1):
             # print(k)
@@ -47,22 +48,46 @@ class Plotter():
         self.len = x.shape[0]
         self.y = y
         self.fig, self.ax = plt.subplots(1,1)
-        self.ax.plot(self.x,self.y,label = "Orginal Data")
-    def overlay(self,alpha,xtrain):
+        self.ax.plot(self.x,self.y)
+        self.ax.scatter(self.x,self.y,label = "Orginal Data")
+
+    def loss(self,alpha,xtrain,gamma,i):
         yp = np.zeros((self.len,1))
-        for i in range(self.len):
-            yp[i] = np.sum(alpha*Ker(self.x[i],xtrain))
-        self.ax.plot(self.x,yp,label = "Predicted")
+        # for i in range(self.len):
+        yp[i] = np.sum(alpha*Ker(self.x[i],xtrain,gamma))
+        loss = np.sum(np.square(yp-self.y))
+        return loss
+
+    def overlay(self,alpha,xtrain,lam,loss,gamma):
+        x = np.linspace(0,1,500)
+        # print(x)
+        yp = np.zeros((x.shape[0],1))
+        for i in range(x.shape[0]):
+            yp[i] = np.sum(alpha*Ker(x[i],xtrain,gamma))
+        # print(yp[0:51])
+        # exit()
+        self.ax.plot(x,yp,label = str(lam) + " Loss: {0:f}".format(loss) )
+
+    def overlay2(self,alpha,xtrain,lam1, lam2,loss,gamma):
+        x = np.linspace(0,1,500)
+        # print(x)
+        yp = np.zeros((x.shape[0],1))
+        for i in range(x.shape[0]):
+            yp[i] = np.sum(alpha*Ker(x[i],xtrain,gamma))
+        self.ax.plot(x,yp,label = "Lam 1: "+str(lam1)+" Lam 2:"+str(lam2)+" Loss: {0:f}".format(loss))
+        # self.ax.legend()
         # self.fig.show()
 
-def Ker(x,z,gam = 500):
+def Ker(x,z,gam = 100):
     # print(x,z)
-    res = np.exp(-gam *((x-z)**2))
+    res = np.exp(-gam *(np.square(x-z)))
+    # print(res)
     return res
 
-def Km(x):
+def Km(x,gamma = 100):
     K = np.zeros((x.shape[0],x.shape[0]))
     for i in range(x.shape[0]):
         for j in range(x.shape[0]):
-            K[i][j] = Ker(x[i],x[j])
+            K[i][j] = Ker(x[i],x[j],gamma)
     return K
+# print(Data_Generation())

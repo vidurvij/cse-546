@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
-
+import torch
 
 class Net(nn.Module):
     def __init__(self,part, M = 1, p = 1, N = 7, p2 = 5):
@@ -23,13 +23,14 @@ class Net(nn.Module):
 
         if part == 4:
             super(Net, self).__init__()
-            self.conv1 = nn.Conv2d(3, 32, 5)
-            self.pool = nn.MaxPool2d(2, 2)
-            self.conv2 = nn.Conv2d(32, 32, 5)
-            self.fc1 = nn.Linear(32 * 5 * 5, 120)
-            self.fc2 = nn.Linear(120, 84)
-            self.fc3 = nn.Linear(84, 10)
-            self.soft = nn.Softmax(0)
+            self.conv1 = nn.Conv2d(3,96,3)
+            self.conv2 = nn.Conv2d(96,96,3)
+            self.pool  = nn.MaxPool2d(3,2)
+            self.conv3 = nn.Conv2d(96,192,3)
+            self.conv4 = nn.Conv2d(192,192,3)
+            self.conv5 = nn.Conv2d(192,192,1)
+            self.conv6 = nn.Conv2d(192,10,1)
+            self.gpool = nn.AvgPool2d(2)
             self.execute = self.d
 
     def forward(self, x):
@@ -57,12 +58,23 @@ class Net(nn.Module):
         return x
 
     def d(self,x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
+        x = (torch.relu(self.conv1(x)))
+        x = (torch.relu(self.conv2(x)))
+        x = self.pool(x)
+        x = (torch.relu(self.conv3(x)))
+        # print(x.shape)
+        x = (torch.relu(self.conv4(x)))
+        x = self.pool(x)
+        x = (torch.relu(self.conv4(x)))
+        x = torch.relu(self.conv5(x))
+        x = torch.relu(self.conv6(x))
+        x = self.gpool(x)
         # print(x.shape)
         # exit()
-        x = x.view(-1, 32 * 5 * 5)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.soft(self.fc3(x))
+        # x = x.view(-1, 32 * 10 * 10)
+        # x = torch.sigmoid(self.fc1(x))
+        # x = torch.sigmoid(self.fc2(x))
+        # x = self.fc3(x)
+        x = x.reshape(x.shape[0],10)
+
         return x

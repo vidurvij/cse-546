@@ -1,8 +1,8 @@
 import numpy as np
 
 def data_load(matrix = False):
-    n = 24983
-    m = 100
+    n = 1000
+    m = 500
     # if matrix:
     train_mr = np.zeros((n,m))
     # print(train_m.shape)
